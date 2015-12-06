@@ -1,11 +1,6 @@
 #
 # Build configuration for Circle CI
 #
-
-general:
-    artifacts:
-        - /home/ubuntu/your-app-name/app/build/outputs/apk/
-
 machine:
     environment:
         ANDROID_HOME: /usr/local/android-sdk-linux
