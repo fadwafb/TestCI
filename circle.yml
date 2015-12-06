@@ -1,27 +1,15 @@
+general:
+  artifacts:
+    - "~/build_output.zip" # Save APK's, Lint Results, and Test Results
+
 machine:
   environment:
     ANDROID_HOME: /usr/local/android-sdk-linux
+
 dependencies:
-      override:
-        - source scripts/environmentSetup.sh && getAndroidSDK
-# scripts/environmentSetup.sh
+  override:
+    - source scripts/environmentSetup.sh && getAndroidSDK
 
-function getAndroidSDK {
-  export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-
-  DEPS="$ANDROID_HOME/installed-dependencies"
-
-  if [ ! -e $DEPS ]; then
-    echo y | android update sdk -u -a -t android-19 &&
-    echo y | android update sdk -u -a -t platform-tools &&
-    echo y | android update sdk -u -a -t build-tools-21.1.2 &&
-    echo y | android update sdk -u -a -t extra-android-m2repository &&
-    echo y | android update sdk -u -a -t extra-android-support &&
-    echo y | android update sdk -u -a -t extra-google-m2repository &&
-    echo no | android create avd -n testAVD -f -t android-19 --abi default/armeabi-v7a &&
-    touch $DEPS
-  fi
-}
 test:
   pre:
     - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
@@ -32,12 +20,4 @@ test:
   override:
     - ./gradlew connectedAndroidTest --info:
         timeout: 360
-
-
-general:
-  artifacts:
-    - "~/build_output.zip" # Save APK's, Lint Results, and Test Results
-
-test:
-  override:
     - zip -r ~/build_output.zip app/build/outputs/
