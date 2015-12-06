@@ -1,25 +1,23 @@
-general:
-  artifacts:
-    - analytics-core/build/test-report
-    - analytics-integrations/*/build/test-report
-    - build/reports/profile
-
 machine:
   environment:
-    ANDROID_HOME: /home/ubuntu/android
-    CIRCLE_JDK_VERSION: oraclejdk8
+    ANDROID_HOME: /usr/local/android-sdk-linux
   java:
-    version: oraclejdk8
+    version: oraclejdk7
 
 dependencies:
-  cache_directories:
-    - /home/ubuntu/.android
-    - /home/ubuntu/android
-    - /home/ubuntu/.gradle
+  pre:
+    - echo y | android update sdk --no-ui --all --filter "tools,platform-tools"
+    - echo y | android update sdk --no-ui --all --filter "android-21,build-tools-21.1.2"
   override:
-    - .buildscript/setup.sh
-    - TERM=dumb ./gradlew dependencies
+    - ./gradlew dependencies
 
 test:
   override:
-    - TERM=dumb ./gradlew checkRelease testRelease --profile
+    - ./gradlew check
+
+  post:
+    - ls
+    - ls library
+    - ls library/build
+    - mkdir $CIRCLE_ARTIFACTS/lint
+    - mv library/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lint
