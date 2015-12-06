@@ -1,20 +1,25 @@
-#
-# Build configuration for Circle CI
-#
-
 general:
-    artifacts:
-        - /home/ubuntu/TestCI/app/build/outputs/apk/
+  artifacts:
+    - analytics-core/build/test-report
+    - analytics-integrations/*/build/test-report
+    - build/reports/profile
 
 machine:
-    environment:
-        ANDROID_HOME: /usr/local/android-sdk-linux
+  environment:
+    ANDROID_HOME: /home/ubuntu/android
+    CIRCLE_JDK_VERSION: oraclejdk8
+  java:
+    version: oraclejdk8
 
 dependencies:
-    override:
-        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-23.0.1,android-23,extra-google-m2repository,extra-google-google_play_services,extra-android-support
-        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+  cache_directories:
+    - /home/ubuntu/.android
+    - /home/ubuntu/android
+    - /home/ubuntu/.gradle
+  override:
+    - .buildscript/setup.sh
+    - TERM=dumb ./gradlew dependencies
 
 test:
-    override:
-        - ./gradlew clean assembleDebug assembleRelease test
+  override:
+    - TERM=dumb ./gradlew checkRelease testRelease --profile
